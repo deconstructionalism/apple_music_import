@@ -1,58 +1,47 @@
-import os
-from .config import FOLDER_TYPE_GLOB_MAPPINGS, DELETE_FOLDER_AFTER_IMPORT
 import glob
-from itertools import chain
 import json
+import os
+import subprocess
+from itertools import chain
 from typing import List
+
+from .config import DELETE_FOLDER_AFTER_IMPORT, FOLDER_TYPE_GLOB_MAPPINGS
 from .lib.abstract_album_folder import AbstractAlbumFolder
+from .lib.helpers import ClassKeyJSONEncoder
 from .lib.logger import logger
 
 
-class ClassKeyJSONEncoder(json.JSONEncoder):
-    def encode(self, obj):
-        # Convert dicts with class keys to str keys
-        if isinstance(obj, dict):
-            obj = {
-                self._encode_key(k): v for k, v in obj.items()
-            }
-        return super().encode(obj)
-
-    def _encode_key(self, key):
-        if isinstance(key, type):  # a class
-            return f"{key.__qualname__}"
-        return str(key)  # fallback
-
-    def default(self, obj):
-        # Extend if you want to handle non-serializable values too
-        return super().default(obj)
-
-
 def main():
+    # get app version info
+    result = subprocess.run(["uv", "version"], capture_output=True)
 
-    logger.info("Apple Music Import")
+    logger.info(result.stdout.decode("utf-8").strip())
     logger.info("-" * 30)
     logger.info("run settings:")
     logger.indent()
-    logger.info(f"FOLDER_TYPE_GLOB_MAPPINGS = ")
+    logger.info("FOLDER_TYPE_GLOB_MAPPINGS = ")
     logger.indent()
-    logger.info(
-        f"{json.dumps(FOLDER_TYPE_GLOB_MAPPINGS, cls=ClassKeyJSONEncoder)}"
-    )
+    logger.info(f"{json.dumps(FOLDER_TYPE_GLOB_MAPPINGS, cls=ClassKeyJSONEncoder)}")
     logger.dedent()
     logger.info(f"DELETE_FOLDER_AFTER_IMPORT = {DELETE_FOLDER_AFTER_IMPORT}")
     logger.dedent()
     logger.info("-" * 30)
 
+    # get a list of all folders discovered using `FOLDER_TYPE_GLOB_MAPPINGS`
     all_folders: List[AbstractAlbumFolder] = []
 
     for folder_class, globs in FOLDER_TYPE_GLOB_MAPPINGS.items():
+        # find all files that match globs
         all_path_matches = chain.from_iterable(
             glob.glob(os.path.expanduser(folder_glob)) for folder_glob in globs
         )
+
+        # filter out only the folder matches
         folder_path_matches = list(
             set([item for item in all_path_matches if os.path.isdir(item)])
         )
 
+        # instantiate folder processing classes for each discovered folder
         folders = [folder_class(folder) for folder in folder_path_matches]
         all_folders.extend(folders)
 
@@ -63,6 +52,7 @@ def main():
     logger.dedent()
     logger.info("-" * 30)
 
+    # process each folder
     for folder in all_folders:
         folder.process_files(DELETE_FOLDER_AFTER_IMPORT)
 

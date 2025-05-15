@@ -14,7 +14,25 @@ dependencies = [
 [dependency-groups]
 dev = [
     "mypy>=1.15.0",
+    "pre-commit>=4.2.0",
+    "pydoclint>=0.6.6",
     "pydub-stubs>=0.25.1.6",
     "ruff>=0.11.9",
     "types-requests>=2.32.0.20250515",
 ]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 88
+lint.select = ["E", "F", "I"]  # E: pycodestyle, F: pyflakes, I: isort
+lint.fixable = ["ALL"]
+lint.unfixable = []
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+docstring-code-format = true
+
+[tool.pydoclint]
+exclude = '\.venv'

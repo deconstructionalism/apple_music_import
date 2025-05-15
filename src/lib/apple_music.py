@@ -1,10 +1,12 @@
 import os
 import subprocess
 
+
 class AppleMusicImportError(Exception):
     def __init__(self, message: str) -> None:
         super().__init__(message)
         pass
+
 
 def import_file_to_apple_music(file_path: str) -> None:
     """Import an audio file into Apple Music.
@@ -24,4 +26,4 @@ def import_file_to_apple_music(file_path: str) -> None:
     '''
     result = subprocess.run(["osascript", "-e", apple_script], capture_output=True)
     if result.stderr:
-        raise AppleMusicImportError(result.stderr.decode('utf-8'))
+        raise AppleMusicImportError(result.stderr.decode("utf-8"))

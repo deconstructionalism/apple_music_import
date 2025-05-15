@@ -1,9 +1,11 @@
 import mimetypes
 import os
-from typing import List, Literal, Optional, TypedDict, Generator
-from .constants import APPLE_MUSIC_COMPATIBLE_MIME_TYPES
+from typing import Generator, List, Literal, Optional, TypedDict
+
 from pydub import AudioSegment
 from pydub.utils import mediainfo
+
+from .constants import APPLE_MUSIC_COMPATIBLE_MIME_TYPES
 
 
 class FileConversionStatus(TypedDict):
@@ -34,15 +36,16 @@ class FileConversion(TypedDict):
 
 
 class FileConvertor(object):
+    """
+    Convert all music files in a directory that are not compatible with
+    Apple Music imports to .m4a files.
+
+
+    Args:
+        path (str): path to folder containing music files.
+    """
+
     def __init__(self, path: str) -> None:
-        """
-        Convert all music files in a directory that are not compatible with
-        Apple Music imports to .m4a files.
-
-
-        Args:
-            path (str): path to folder containing music files.
-        """
         self.path = path
         self.incompatible_files: List[FileConversion] = []
 
@@ -88,7 +91,7 @@ class FileConvertor(object):
         self.incompatible_files = incompatible_files
 
     def __convert_file(self, file: FileConversion) -> None:
-        """Attempt to convert a single audio file to .m4a.
+        """Attempt to convert a single audio file to lossless .m4a.
 
         Args:
             file (FileConversion): info about file to convert

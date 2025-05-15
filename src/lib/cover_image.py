@@ -1,17 +1,19 @@
 import mimetypes
 import subprocess
 import tempfile
+
 import requests
 from mutagen.mp4 import MP4, MP4Cover
 
 
 class CoverImage(object):
-    def __init__(self, path: str):
-        """Object for displaying and retrieving image for album cover.
+    """Object for displaying and retrieving image for album cover.
 
-        Args:
-            path (str): path to file.
-        """
+    Args:
+        path (str): path to file.
+    """
+
+    def __init__(self, path: str):
         self.path = path
         self.mime_type = mimetypes.guess_type(path)[0]
 
@@ -34,7 +36,7 @@ class CoverImage(object):
         response = requests.get(url)
         response.raise_for_status()
 
-        if not response.headers.get("content-type").startswith('image'):
+        if not response.headers.get("content-type").startswith("image"):
             raise TypeError("URL does not point to an image")
 
         # save the image

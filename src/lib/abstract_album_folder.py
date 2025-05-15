@@ -1,27 +1,29 @@
 import os
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import List, Optional
-import send2trash
 
+from .apple_music import import_file_to_apple_music
 from .constants import APPLE_MUSIC_COMPATIBLE_MIME_TYPES, IMAGE_EXTENSIONS
 from .cover_image import CoverImage
 from .file_convertor import FileConvertor
 from .helpers import find_files_by_ext, find_files_by_mime_type
-from .apple_music import import_file_to_apple_music
 from .logger import logger
 
 
 class AbstractAlbumFolder(ABC):
-    def __init__(self, path: str, folder_type: str, cover_image_file_name: Optional[str] = None) -> None:
-        """
-        Abstract class for processing images from a folder that contains
-        music files to import.
+    """
+    Abstract class for processing images from a folder that contains
+    music files to import.
 
-        Args:
-            path (str): path to the folder
-            folder_type (str): friendly unique name to call the folder type
-            cover_image_file_name (Optional[str]): name of image file within the folder
-        """
+    Args:
+        path (str): path to the folder
+        folder_type (str): friendly unique name to call the folder type
+        cover_image_file_name (Optional[str]): name of image file within the folder
+    """
+
+    def __init__(
+        self, path: str, folder_type: str, cover_image_file_name: Optional[str] = None
+    ) -> None:
         self.path = path
         self.folder_type = folder_type
         self.compatible_file_paths: List[str] = []
@@ -31,6 +33,7 @@ class AbstractAlbumFolder(ABC):
             if cover_image_file_name
             else None
         )
+        self.has_errors = False
 
     def __find_files(self) -> None:
         """Find all music files in folder path"""
@@ -74,10 +77,11 @@ class AbstractAlbumFolder(ABC):
         else:
             # display images with numbers
             images_in_folder = [CoverImage(path) for path in image_paths_in_folder]
-            logger.info(
-                f"{len(images_in_folder)} images found in folder."
+            logger.info(f"{len(images_in_folder)} images found in folder.")
+            logger.prompt(
+                "please pick one by entering the number you would like to use or enter "
+                + "'url' if you would like to load a cover image from a URL"
             )
-            logger.prompt("please pick one by entering the number you would like to use or enter 'url' if you would like to load a cover image from a URL")
             for index, image in enumerate(images_in_folder):
                 logger.info(index + 1)
                 image.display()
@@ -90,7 +94,9 @@ class AbstractAlbumFolder(ABC):
                     break
                 if which_image not in [i + i for i, _ in enumerate(images_in_folder)]:
                     logger.indent()
-                    logger.warning(f"please pick a number from 1 to {len(images_in_folder) + 1}")
+                    logger.warning(
+                        f"please pick a number from 1 to {len(images_in_folder) + 1}"
+                    )
                     logger.dedent()
 
                 self.cover_image = images_in_folder[int(which_image) - 1]
@@ -117,6 +123,7 @@ class AbstractAlbumFolder(ABC):
                 logger.info(f"{new_path}")
                 logger.dedent(2)
             if file["state"]["status"] == "error":
+                self.has_errors = True
                 logger.indent()
                 logger.error(f"conversion failed for {old_path}:")
                 logger.indent()
@@ -146,6 +153,7 @@ class AbstractAlbumFolder(ABC):
                 logger.info(file_path)
                 logger.dedent(2)
         except Exception as e:
+            self.has_errors = True
             logger.indent()
             logger.error("import into Apple Music failed:")
             logger.indent()
@@ -153,10 +161,10 @@ class AbstractAlbumFolder(ABC):
             logger.error(f"error: {str(e)}")
             logger.dedent(2)
 
-    def __delete_folder(self) -> None:
+    @abstractmethod
+    def delete_folder(self) -> None:
         """Delete the folder at this path."""
-
-        send2trash.send2trash(self.path)
+        pass
 
     def process_files(self, delete_folder_after: bool = False) -> None:
         logger.info(f"processing {self.folder_type} folder at '{self.path}'...")
@@ -165,17 +173,21 @@ class AbstractAlbumFolder(ABC):
         self.__convert_files()
         logger.info("...completed file conversions")
         self.__find_files()
-        logger.info(f"found {len(self.compatible_file_paths)} compatible files to import")
+        logger.info(
+            f"found {len(self.compatible_file_paths)} compatible files to import"
+        )
         logger.info("tagging files with cover image...")
         self.__tag_files_with_image()
         logger.info("...completed tagging files")
         logger.info("importing files to Apple Music...")
         self.__import_all_files()
         logger.info("completed imports")
-        logger.dedent()
         if delete_folder_after:
-            logger.info(" deleting folder after import...")
-            self.__delete_folder()
-            logger.info("...folder deleted")
-        logger.info("...completed processing folder")
+            if self.has_errors:
+                logger.warn("errors during processing. will not delete folder")
+            else:
+                logger.info("deleting folder after import...")
+                self.delete_folder()
+                logger.info("...folder deleted")
         logger.dedent()
+        logger.info("...completed processing folder")
