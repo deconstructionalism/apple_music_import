@@ -2,13 +2,13 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: ["**"]
   pull_request:
-    branches: [main]
+    branches: ["**"]
 
 jobs:
   lint:
-    name: Run Linters
+    name: Check linting and formatting
     runs-on: ubuntu-latest
 
     steps:
