@@ -1,7 +1,7 @@
 # Apple Music Import
 
 [![CI](https://github.com/deconstructionalism/apple_music_import/actions/workflows/ci.yaml/badge.svg)](https://github.com/deconstructionalism/apple_music_import/actions/workflows/ci.yaml)
-![PyPI - Version](https://img.shields.io/pypi/v/apple-music-import)
+[![PyPI - Version](https://img.shields.io/pypi/v/apple-music-import)](https://pypi.org/project/apple-music-import/)
 
 Script to import any type of music file along with metadata and album art
 into Apple Music.
