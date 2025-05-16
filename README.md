@@ -1,5 +1,8 @@
 # Apple Music Import
 
+![CI](https://github.com/deconstructionalism/apple_music_import/actions/workflows/ruff.yml/badge.svg)
+
+
 Script to import any type of music file along with metadata and album art
 into Apple Music.
 
