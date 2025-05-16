@@ -1,7 +1,7 @@
 # Apple Music Import
 
-![CI](https://github.com/deconstructionalism/apple_music_import/actions/workflows/ruff.yml/badge.svg)
-
+[![CI](https://github.com/deconstructionalism/apple_music_import/actions/workflows/ci.yaml/badge.svg)](https://github.com/deconstructionalism/apple_music_import/actions/workflows/ci.yaml)
+![PyPI - Version](https://img.shields.io/pypi/v/apple-music-import)
 
 Script to import any type of music file along with metadata and album art
 into Apple Music.
@@ -40,11 +40,11 @@ that should be processes by said concrete class.
 ### Music Folder Types
 
 You can create new concrete class instances of `AbstractAlbumFolder` abstract class
-and place them in `src/folder_classes`. Each of these classes represent a type of folder
-containing an album of music files, with or without a cover image. The concrete class
-can optionally set the name of cover images in the folder (if they exist and have
-consistent naming), and must specify a method for deleting the folder when the import
-is done.
+and place them in `src/folder_classes`. Each of these classes represent a type of
+folder containing an album of music files, with or without a cover image. The concrete
+class can optionally set the name of cover images in the folder (if they exist and
+have consistent naming), and must specify a method for deleting the folder when the
+import is done.
 
 ## Development
 
@@ -66,9 +66,5 @@ checks, as well as making sure that commit message is formatted as a
 [conventional commit](https://www.conventionalcommits.org/en/v1.0.0/).
 
 ### Testing
-
-...TBA
-
-### Building Wheels
 
 ...TBA
