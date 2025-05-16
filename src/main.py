@@ -44,7 +44,10 @@ def main():
         # instantiate folder processing classes for each discovered folder
         folders = [folder_class(folder) for folder in folder_path_matches]
         all_folders.extend(folders)
-
+    if len(all_folders) == 0:
+        logger.info("no folders discovered")
+        logger.info("-" * 30)
+        return
     logger.info("discovered folders:")
     logger.indent()
     for folder in all_folders:

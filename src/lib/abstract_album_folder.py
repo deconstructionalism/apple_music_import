@@ -6,7 +6,7 @@ from .apple_music import import_file_to_apple_music
 from .constants import APPLE_MUSIC_COMPATIBLE_MIME_TYPES, IMAGE_EXTENSIONS
 from .cover_image import CoverImage
 from .file_convertor import FileConvertor
-from .helpers import find_files_by_ext, find_files_by_mime_type
+from .helpers import find_files_by_ext, find_files_by_mime_type, log_section
 from .logger import logger
 
 
@@ -105,7 +105,6 @@ class AbstractAlbumFolder(ABC):
         assert isinstance(self.cover_image, CoverImage)
         logger.info("cover image set to:")
         self.cover_image.display()
-        logger.dedent()
 
     def __convert_files(self) -> None:
         """Convert any files not compatible with Apple Music to .aac."""
@@ -116,19 +115,17 @@ class AbstractAlbumFolder(ABC):
             old_path = os.path.join(file["path"], file["old_name"])
             new_path = os.path.join(file["path"], file["new_name"])
             if file["state"]["status"] == "success":
-                logger.indent()
                 logger.info("conversion succeeded:")
                 logger.indent()
                 logger.info(f"{old_path} -->")
                 logger.info(f"{new_path}")
-                logger.dedent(2)
+                logger.dedent()
             if file["state"]["status"] == "error":
                 self.has_errors = True
-                logger.indent()
                 logger.error(f"conversion failed for {old_path}:")
                 logger.indent()
                 logger.error(f"error: {file['state']['errorMessage']}")
-                logger.dedent(2)
+                logger.dedent()
 
     def __tag_files_with_image(self) -> None:
         """Tag compatible audio files with cover image."""
@@ -167,27 +164,38 @@ class AbstractAlbumFolder(ABC):
         pass
 
     def process_files(self, delete_folder_after: bool = False) -> None:
-        logger.info(f"processing {self.folder_type} folder at '{self.path}'...")
-        logger.indent()
-        logger.info("starting file conversion...")
+        end_process_section = log_section(
+            "processing folder",
+            f"[{{section_name}}]: {self.folder_type} folder at '{self.path}'",
+        )
+
+        end_section = log_section("file conversions")
         self.__convert_files()
-        logger.info("...completed file conversions")
+        end_section()
+
+        end_section = log_section("finding files")
         self.__find_files()
         logger.info(
             f"found {len(self.compatible_file_paths)} compatible files to import"
         )
-        logger.info("tagging files with cover image...")
+        end_section()
+        if len(self.compatible_file_paths) == 0:
+            return
+
+        end_section = log_section("cover image tagging")
         self.__tag_files_with_image()
-        logger.info("...completed tagging files")
-        logger.info("importing files to Apple Music...")
+        end_section()
+
+        end_section = log_section("Apple Music import")
         self.__import_all_files()
-        logger.info("completed imports")
+        end_section()
+
         if delete_folder_after:
+            end_section = log_section("delete album folder")
             if self.has_errors:
                 logger.warn("errors during processing. will not delete folder")
+                end_section()
             else:
-                logger.info("deleting folder after import...")
                 self.delete_folder()
-                logger.info("...folder deleted")
-        logger.dedent()
-        logger.info("...completed processing folder")
+                end_section()
+        end_process_section()

@@ -3,7 +3,9 @@ import json
 import mimetypes
 import os
 from itertools import chain
-from typing import Any, List
+from typing import Any, Callable, List
+
+from .logger import logger
 
 
 def find_files_by_ext(path: str, extensions: List[str]) -> List[str]:
@@ -112,3 +114,39 @@ class ClassKeyJSONEncoder(json.JSONEncoder):
         if isinstance(key, type):
             return f"{key.__qualname__}"
         return str(key)
+
+
+def log_section(
+    section_name: str, start_format="[{section_name}]", end_format="[/{section_name}]"
+) -> Callable[[], None]:
+    """
+    Log an indented section of logic with names section start and stop
+    and indented internal logging. Return a function to end a section.
+
+    Args:
+        section_name (str): the name of the section
+        start_format (str): start section template string that include `section_name`.
+                            Defaults to "[{section_name}]"
+        end_format (str): end section template string that include `section_name`.
+                          Defaults to "[/{section_name}]"
+    Returns:
+        Callable: callback to end a section
+
+    """
+
+    logger.info(start_format.format(section_name=section_name))
+    logger.indent()
+
+    def end_section(end_format: str = end_format):
+        """
+        Callback to end a section by logging and de-denting.
+
+        Args:
+            end_format (str, optional): use this to add custom data to the end section
+                                        format that was acquired during the section
+                                        logic. Defaults to end_format.
+        """
+        logger.dedent()
+        logger.info(end_format.format(section_name=section_name))
+
+    return end_section
