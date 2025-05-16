@@ -21,7 +21,7 @@ def find_files_by_ext(path: str, extensions: List[str]) -> List[str]:
 
     matched_items = list(
         chain.from_iterable(
-            [glob.glob(os.path.join(path, "*", ext)) for ext in extensions]
+            [glob.glob(os.path.join(path, f"*{ext}")) for ext in extensions]
         )
     )
     matched_files = [
