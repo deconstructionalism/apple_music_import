@@ -90,6 +90,11 @@ Testing is done with [`pytest`](https://pytest.org)
 
 - `poe test` to run all tests
 
+### Versioning
+
+- `poe bump_version [major, minor, patch]` bump version, updating `pyproject.toml`
+  and adding a git tag for the version
+
 ### Building
 
 - `poe build` to build the app into `dist/`
@@ -110,6 +115,8 @@ maintainable
 - All pull requests should be focused, small, and ideally scoped to a single
   change or fix
 - Ensure your branch is up to date with the base branch before opening a PR
+- Please do not publish or increment the version unless you are forking off a
+  separately maintained version of this repo
 
 ### Test Coverage
 
