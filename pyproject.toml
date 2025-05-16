@@ -30,6 +30,16 @@ dev = [
     "types-requests>=2.32.0.20250515",
 ]
 
+[tool.poe.tasks]
+run = "uv run -m src.main"
+build = "uv build"
+doclint ="uv run pydoclint ."
+format = "uv run ruff format"
+lint = "uv run ruff check"
+"lint:fix" = "uv run ruff check --fix"
+publish = "uv publish"
+test ="uv run pytest"
+
 [project.urls]
 Homepage = "https://github.com/deconstructionalism/apple_music_import"
 Issues = "https://github.com/deconstructionalism/apple_music_import/issues"
