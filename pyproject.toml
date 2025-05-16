@@ -1,6 +1,6 @@
 [project]
 name = "apple-music-import"
-version = "0.1.1"
+version = "0.1.2"
 authors = [
     { name="Arjun Ray", email="deconstructionalism@gmail.com"}
 ]
@@ -39,6 +39,15 @@ lint = "uv run ruff check"
 "lint:fix" = "uv run ruff check --fix"
 publish = "uv publish"
 test ="uv run pytest"
+
+[tool.poe.tasks.bump_version]
+shell = """
+uv version --bump $INCREMENT
+NEW_VERSION=$(uv version --short)
+git tag v$NEW_VERSION
+echo "add git tag for version v$NEW_VERSION"
+"""
+args = [{name = "INCREMENT", positional = true}]
 
 [project.urls]
 Homepage = "https://github.com/deconstructionalism/apple_music_import"
