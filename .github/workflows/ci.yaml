@@ -63,32 +63,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Read Python version from .python-version
-      id: get-python-version
-      run: |
-        PYTHON_VERSION=$(cat .python-version)
-        echo "python-version=$PYTHON_VERSION" >> "$GITHUB_OUTPUT"
+      - name: Read Python version from .python-version
+        id: get-python-version
+        run: |
+          PYTHON_VERSION=$(cat .python-version)
+          echo "python-version=$PYTHON_VERSION" >> "$GITHUB_OUTPUT"
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ steps.get-python-version.outputs.python-version }}
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.get-python-version.outputs.python-version }}
 
-    - name: Install uv
-      run: |
-        curl -LsSf https://astral.sh/uv/install.sh | sh
-        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
-    - name: Install dependencies using uv
-      run: |
-        uv venv
-        source .venv/bin/activate
-        uv pip install pytest pytest-cov
+      - name: Install dependencies using uv
+        run: |
+          uv venv
+          source .venv/bin/activate
+          uv pip install pytest pytest-cov
 
-    - name: Test with pytest
-      run: |
-        source .venv/bin/activate
-        echo "Running pytest..."
-        uv run pytest . --cov=com --cov-report=xml --cov-report=html
+      - name: Test with pytest (no coverage fail)
+        if: github.event_name != 'pull_request' && github.ref != 'refs/heads/main'
+        run: |
+          source .venv/bin/activate
+          echo "Running pytest without coverage enforcement..."
+          uv run pytest . --cov=src --cov-report=term
+
+      - name: Test with pytest (enforce coverage >=95%)
+        if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+        run: |
+          source .venv/bin/activate
+          echo "Running pytest with coverage threshold..."
+          uv run pytest . --cov=src --cov-report=term --cov-fail-under=95

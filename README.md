@@ -88,7 +88,7 @@ simplify common operations.
 
 Testing is done with [`pytest`](https://pytest.org)
 
-- `poe test` to run all tests
+- `poe test` to run all tests and provide a coverage report
 
 ### Versioning
 
@@ -119,6 +119,8 @@ maintainable
   separately maintained version of this repo
 
 ### Test Coverage
+
+> PRs into `main` branch required 95% test coverage to pass CI.
 
 - If you’re adding a new feature, include full test coverage
 - Run `poe test` to ensure all tests pass

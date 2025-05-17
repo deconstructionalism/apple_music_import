@@ -1,9 +1,7 @@
 [project]
 name = "apple-music-import"
 version = "0.1.2"
-authors = [
-    { name="Arjun Ray", email="deconstructionalism@gmail.com"}
-]
+authors = [{ name = "Arjun Ray", email = "deconstructionalism@gmail.com" }]
 description = "convert, tag cover images, and import music files into Apple Music"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -26,6 +24,7 @@ dev = [
     "pydoclint>=0.6.6",
     "pydub-stubs>=0.25.1.6",
     "pytest>=8.3.5",
+    "pytest-cov>=6.1.1",
     "ruff>=0.11.9",
     "types-requests>=2.32.0.20250515",
 ]
@@ -33,12 +32,12 @@ dev = [
 [tool.poe.tasks]
 run = "uv run -m src.main"
 build = "uv build"
-doclint ="uv run pydoclint ."
+doclint = "uv run pydoclint ."
 format = "uv run ruff format"
 lint = "uv run ruff check"
 "lint:fix" = "uv run ruff check --fix"
 publish = "uv publish"
-test ="uv run pytest"
+test = "uv run pytest --cov=src --cov-report=term-missing"
 
 [tool.poe.tasks.bump_version]
 shell = """
@@ -47,7 +46,7 @@ NEW_VERSION=$(uv version --short)
 git tag v$NEW_VERSION
 echo "add git tag for version v$NEW_VERSION"
 """
-args = [{name = "INCREMENT", positional = true}]
+args = [{ name = "INCREMENT", positional = true }]
 
 [project.urls]
 Homepage = "https://github.com/deconstructionalism/apple_music_import"
@@ -56,7 +55,7 @@ Issues = "https://github.com/deconstructionalism/apple_music_import/issues"
 [tool.ruff]
 target-version = "py310"
 line-length = 88
-lint.select = ["E", "F", "I"]  # E: pycodestyle, F: pyflakes, I: isort
+lint.select = ["E", "F", "I"] # E: pycodestyle, F: pyflakes, I: isort
 lint.fixable = ["ALL"]
 lint.unfixable = []
 
@@ -70,6 +69,4 @@ docstring-code-format = true
 exclude = '\.venv'
 
 [tool.pytest.ini_options]
-pythonpath = [
-  "src"
-]
+pythonpath = ["src"]
