@@ -1,28 +1,6 @@
-import logging
-from io import StringIO
-
 import pytest
 
-from src.lib.logger import COLORS, PROMPT_LEVEL, RESET, IndentColoredLogger
-
-
-@pytest.fixture
-def log_stream():
-    stream = StringIO()
-    handler = logging.StreamHandler(stream)
-    formatter = logging.Formatter("%(message)s")
-    handler.setFormatter(formatter)
-    return stream, handler
-
-
-@pytest.fixture
-def logger_with_stream(log_stream):
-    stream, handler = log_stream
-    logger = IndentColoredLogger(name="test_logger")
-    logger.logger.handlers = []  # Clear default handlers
-    logger.logger.addHandler(handler)
-    logger.logger.setLevel(logging.DEBUG)
-    return logger, stream
+from src.lib.logger import COLORS, RESET
 
 
 @pytest.mark.parametrize(
@@ -47,7 +25,7 @@ def test_log_levels(logger_with_stream, level, message):
     assert output.strip().endswith(RESET)
 
 
-def test_indent_and_dedent(logger_with_stream):
+def test_indent_and_dedent(logger_with_stream, strip_color):
     logger, stream = logger_with_stream
 
     logger.indent()
@@ -65,19 +43,74 @@ def test_indent_and_dedent(logger_with_stream):
     logger.dedent()
     logger.debug("Dedented fully")
 
-    output = stream.getvalue().splitlines()
-    assert "  Indented once" in output[0]
-    assert "      Indented three times" in output[1]
-    assert "    Indented two times" in output[2]
-    assert "Dedented fully" in output[3]
-    assert "Dedented fully" in output[4]
+    output = [strip_color(line, "debug") for line in stream.getvalue().splitlines()]
+    assert "  Indented once" == output[0]
+    assert "      Indented three times" == output[1]
+    assert "    Indented two times" == output[2]
+    assert "Dedented fully" == output[3]
+    assert "Dedented fully" == output[4]
 
 
-def test_prompt_log_level_functionality(caplog):
-    logger = logging.getLogger("test_prompt_log")
-    logger.setLevel(logging.DEBUG)
+def test_prompt_log_level(logger_with_stream, strip_color):
+    logger, stream = logger_with_stream
 
-    with caplog.at_level(PROMPT_LEVEL):
-        logger.prompt("This is a prompt message")
+    logger.prompt("This is a prompt message")
+    output = strip_color(stream.getvalue().splitlines()[0], "prompt")
 
-    assert "This is a prompt message" in caplog.text
+    assert "This is a prompt message" == output
+
+
+def test_log_section(logger_with_stream, strip_color):
+    logger, stream = logger_with_stream
+
+    # test a section is indented and dedented
+    logger.info("outside of section")
+    end_section = logger.log_section("test section")
+    logger.info("inside of section")
+    end_section()
+    logger.info("outside of section")
+
+    output = [strip_color(line, "info") for line in stream.getvalue().splitlines()]
+    assert "outside of section" == output[0]
+    assert "[test section]" == output[1]
+    assert "  inside of section" == output[2]
+    assert "[/test section]" == output[3]
+    assert "outside of section" == output[4]
+
+
+def test_custom_log_section_start_and_end_formats(logger_with_stream, strip_color):
+    logger, stream = logger_with_stream
+
+    # test that a custom start format is applied
+    logger.info("outside of section")
+    end_section = logger.log_section(
+        "test section", "|{section_name}|", "||{section_name}||"
+    )
+    logger.info("inside of section")
+    end_section()
+    logger.info("outside of section")
+
+    output = [strip_color(line, "info") for line in stream.getvalue().splitlines()]
+    assert "outside of section" == output[0]
+    assert "|test section|" == output[1]
+    assert "  inside of section" == output[2]
+    assert "||test section||" == output[3]
+    assert "outside of section" == output[4]
+
+    # clear the stream
+    stream.seek(0)
+    stream.truncate()
+
+    # test that a custom end format on calling end section callback is applied
+    logger.info("outside of section")
+    end_section = logger.log_section("test section")
+    logger.info("inside of section")
+    end_section("|{section_name}|")
+    logger.info("outside of section")
+
+    output = [strip_color(line, "info") for line in stream.getvalue().splitlines()]
+    assert "outside of section" == output[0]
+    assert "[test section]" == output[1]
+    assert "  inside of section" == output[2]
+    assert "|test section|" == output[3]
+    assert "outside of section" == output[4]

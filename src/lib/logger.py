@@ -1,4 +1,5 @@
 import logging
+from typing import Callable
 
 # CONSTANTS
 
@@ -71,6 +72,44 @@ class IndentColoredLogger(object):
             count (int, optional): number of dedents to apply. Defaults to 1.
         """
         self.indent_level = max(0, self.indent_level - count)
+
+    def log_section(
+        self,
+        section_name: str,
+        start_format="[{section_name}]",
+        end_format="[/{section_name}]",
+    ) -> Callable[[], None]:
+        """
+        Log an indented section of logic with names section start and stop
+        and indented internal logging. Return a function to end a section.
+
+        Args:
+            section_name (str): the name of the section
+            start_format (str): start section template string that include
+                                `section_name`. Defaults to "[{section_name}]"
+            end_format (str): end section template string that include
+                              `section_name`. Defaults to "[/{section_name}]"
+        Returns:
+            Callable: callback to end a section
+
+        """
+
+        self.info(start_format.format(section_name=section_name))
+        self.indent()
+
+        def end_section(end_format: str = end_format):
+            """
+            Callback to end a section by logging and de-denting.
+
+            Args:
+                end_format (str, optional): use this to add custom data to the end
+                                            section format that was acquired during
+                                            the section logic. Defaults to end_format.
+            """
+            self.dedent()
+            self.info(end_format.format(section_name=section_name))
+
+        return end_section
 
     def _log(self, level: str, message: str):
         """
