@@ -18,6 +18,7 @@ dev = [
     { name = "pre-commit" },
     { name = "pydoclint" },
     { name = "pydub-stubs" },
+    { name = "pyright" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "ruff" },
@@ -37,6 +38,7 @@ dev = [
     { name = "pre-commit", specifier = ">=4.2.0" },
     { name = "pydoclint", specifier = ">=0.6.6" },
     { name = "pydub-stubs", specifier = ">=0.25.1.6" },
+    { name = "pyright", specifier = ">=1.1.400" },
     { name = "pytest", specifier = ">=8.3.5" },
     { name = "pytest-cov", specifier = ">=6.1.1" },
     { name = "ruff", specifier = ">=0.11.9" },
@@ -368,6 +370,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/5c/28/2ae85a1671861ee88235c3bd50f495a80562003f22ab4223af6c8dfcbfc2/pydub_stubs-0.25.1.6.tar.gz", hash = "sha256:38e9a1e490b11e9fdd3c5a0b01667e2d959c817aadb56555b124c6c8be028ff5", size = 8602, upload-time = "2025-04-11T07:32:07.718Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/52/9e/c286937e56d47c97ce2221456b7779abf6449fd41d78a8fb9d2b13065b8c/pydub_stubs-0.25.1.6-py3-none-any.whl", hash = "sha256:235be0707485c48fe3d6537c751171bfeca21480c914e7e7bc9db2d6ed65f8ae", size = 9457, upload-time = "2025-04-11T07:32:06.287Z" },
+]
+
+[[package]]
+name = "pyright"
+version = "1.1.400"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "nodeenv" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6c/cb/c306618a02d0ee8aed5fb8d0fe0ecfed0dbf075f71468f03a30b5f4e1fe0/pyright-1.1.400.tar.gz", hash = "sha256:b8a3ba40481aa47ba08ffb3228e821d22f7d391f83609211335858bf05686bdb", size = 3846546, upload-time = "2025-04-24T12:55:18.907Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c8/a5/5d285e4932cf149c90e3c425610c5efaea005475d5f96f1bfdb452956c62/pyright-1.1.400-py3-none-any.whl", hash = "sha256:c80d04f98b5a4358ad3a35e241dbf2a408eee33a40779df365644f8054d2517e", size = 5563460, upload-time = "2025-04-24T12:55:17.002Z" },
 ]
 
 [[package]]

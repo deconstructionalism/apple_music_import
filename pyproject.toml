@@ -23,6 +23,7 @@ dev = [
     "pre-commit>=4.2.0",
     "pydoclint>=0.6.6",
     "pydub-stubs>=0.25.1.6",
+    "pyright>=1.1.400",
     "pytest>=8.3.5",
     "pytest-cov>=6.1.1",
     "ruff>=0.11.9",
@@ -36,6 +37,7 @@ doclint = "uv run pydoclint ."
 format = "uv run ruff format"
 lint = "uv run ruff check"
 "lint:fix" = "uv run ruff check --fix"
+typecheck = "uv run pyright"
 publish = "uv publish"
 test = "uv run pytest --cov=src --cov-report=term-missing"
 
@@ -70,3 +72,10 @@ exclude = '\.venv'
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
+
+[tool.pyright]
+include = ["src", "tests"]
+typeCheckingMode = "strict"
+reportMissingImports = "error"
+pythonVersion = "3.10"
+stubPath ="./typings"

@@ -76,17 +76,28 @@ simplify common operations.
 
 ### Linting
 
+> [`ruff`](https://github.com/astral-sh/ruff) is used to lint
+
 - `poe lint` to lint code
   - `poe lint:fix` if you want automatic fixing of linting issues
 - `poe doclint` to lint docstrings
 
 ### Formatting
 
+> [`ruff`](https://docs.astral.sh/ruff/) is used to format
+
 - `poe format` to format code
+
+### Typechecking
+
+> [`pyright`](https://microsoft.github.io/pyright/) is used to perform static
+> type checking
+
+- `poe typecheck` to type check code
 
 ### Testing
 
-Testing is done with [`pytest`](https://pytest.org)
+> [`pytest`](https://pytest.org) is used to test
 
 - `poe test` to run all tests and provide a coverage report
 
@@ -127,12 +138,12 @@ maintainable
 
 ### Code Style
 
-This repo contains pre-commit hooks to make sure code passes above lint and
-format checks as well as making sure that commit message is formatted as a
-[conventional commit](https://www.conventionalcommits.org/en/v1.0.0/)
+This repo contains pre-commit hooks to make sure code passes above lint,
+format, and type checks as well as making sure that commit message is
+formatted as a [conventional commit](https://www.conventionalcommits.org/en/v1.0.0/)
 
-- Run `poe lint:fix` to auto-fix linting issues and `poe format` to
-  auto-format code
+- Run `poe lint:fix` to auto-fix linting issues, `poe format` to
+  auto-format code, and `poe typecheck` to type check code
 - Use conventional commit messages
 
 ### Docs
