@@ -21,7 +21,7 @@ App to bulk import music from multiple folders into Apple Music.
 
 1. Clone this repository locally
 1. Run `uv venv` to set up and activate virtual env
-1. Run `uv pip install -r pyproject.toml` to install all packages
+1. Run `uv sync` to install all packages
 
 ## Run App
 
