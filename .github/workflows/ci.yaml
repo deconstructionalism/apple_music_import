@@ -35,7 +35,7 @@ jobs:
         run: |
           uv venv
           source .venv/bin/activate
-          uv sync --config-file pyproject.toml
+          uv sync
 
       - name: Ruff - Lint check
         run: |
