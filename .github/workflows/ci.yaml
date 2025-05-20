@@ -7,7 +7,7 @@ on:
     branches: ["**"]
 
 jobs:
-  lint:
+  lint_format_typecheck:
     name: Check linting and formatting
     runs-on: ubuntu-latest
 
@@ -35,7 +35,7 @@ jobs:
         run: |
           uv venv
           source .venv/bin/activate
-          uv pip install ruff pydoclint
+          uv add ruff pydoclint pyright
 
       - name: Ruff - Lint check
         run: |
@@ -58,6 +58,14 @@ jobs:
           source .venv/bin/activate
           echo "Running pydoclint..."
           pydoclint .
+        env:
+          RUFF_CONFIG: pyproject.toml
+
+      - name: Pyright - Check types
+        run: |
+          source .venv/bin/activate
+          echo "Running pyright..."
+          pyright .
   test:
     name: Check all tests pass
     runs-on: ubuntu-latest

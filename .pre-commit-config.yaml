@@ -17,8 +17,9 @@ repos:
     hooks:
       - id: pyright
         name: pyright
-        entry: poe typecheck
+        entry: uv run pyright
         language: system
+        files: \.py$
         stages: [pre-commit]
   - repo: https://github.com/jsh9/pydoclint
     rev: 0.6.7

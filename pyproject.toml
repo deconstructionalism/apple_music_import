@@ -77,5 +77,4 @@ pythonpath = ["src"]
 include = ["src", "tests"]
 typeCheckingMode = "strict"
 reportMissingImports = "error"
-pythonVersion = "3.10"
 stubPath ="./typings"
