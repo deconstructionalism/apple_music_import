@@ -15,6 +15,14 @@ repos:
         args: []
   - repo: local
     hooks:
+      - id: pytest
+        name: pytest
+        entry: uv run pytest
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+  - repo: local
+    hooks:
       - id: pyright
         name: pyright
         entry: uv run pyright
