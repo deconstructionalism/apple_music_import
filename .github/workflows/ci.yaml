@@ -35,7 +35,7 @@ jobs:
         run: |
           uv venv
           source .venv/bin/activate
-          uv add ruff pydoclint pyright
+          uv add --all --config pyproject.toml
 
       - name: Ruff - Lint check
         run: |
