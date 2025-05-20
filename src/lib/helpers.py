@@ -3,7 +3,7 @@ import json
 import mimetypes
 import os
 from itertools import chain
-from typing import Any, List
+from typing import Any, Dict, Hashable, List, cast
 
 
 def find_files_by_ext(path: str, extensions: List[str]) -> List[str]:
@@ -85,18 +85,19 @@ class ClassKeyJSONEncoder(json.JSONEncoder):
     to serialize to JSON string.
     """
 
-    def encode(self, obj: Any) -> str:
+    def encode(self, o: Any) -> str:
         """Convert dicts with class keys to string keys.
 
         Args:
-            obj (Any): object to encode
+            o (Any): object to encode
 
         Returns:
             str: object representation serialized to a string
         """
-        if isinstance(obj, dict):
-            obj = {self.__encode_key(k): v for k, v in obj.items()}
-        return super().encode(obj)
+        if isinstance(o, dict):
+            o_dict = cast(Dict[Hashable, Any], o)
+            o = {self.__encode_key(k): v for k, v in o_dict.items()}
+        return super().encode(o)
 
     def __encode_key(self, key: Any) -> str:
         """

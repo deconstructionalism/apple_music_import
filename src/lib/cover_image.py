@@ -36,7 +36,7 @@ class CoverImage(object):
         response = requests.get(url)
         response.raise_for_status()
 
-        if not response.headers.get("content-type").startswith("image"):
+        if not response.headers.get("content-type", "").startswith("image"):
             raise TypeError("URL does not point to an image")
 
         # save the image
@@ -56,16 +56,17 @@ class CoverImage(object):
         if not audio.tags:
             audio.add_tags()
 
-        # Read the image
+        # read the image
         with open(self.path, "rb") as img:
             img_data = img.read()
 
-        ## handle PNG images
+        # handle PNG images
         if self.mime_type == "image/png":
             cover = MP4Cover(img_data, imageformat=MP4Cover.FORMAT_PNG)
         else:
             cover = MP4Cover(img_data, imageformat=MP4Cover.FORMAT_JPEG)
 
-        ## assign the image
+        # assign the image
         audio["covr"] = [cover]
+        getattr(audio, "save")()
         audio.save()

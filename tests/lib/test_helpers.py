@@ -1,5 +1,7 @@
 import json
 import mimetypes
+from pathlib import Path
+from typing import List, Tuple
 
 import pytest
 
@@ -18,7 +20,7 @@ def ensure_default_mimetypes():
     yield
 
 
-def test_find_files_by_ext(tmp_path):
+def test_find_files_by_ext(tmp_path: Path):
     file_a = tmp_path / "a.txt"
     file_b = tmp_path / "b.log"
     file_c = tmp_path / "c.txt"
@@ -46,7 +48,7 @@ def test_find_files_by_ext(tmp_path):
     assert len(found) == 0
 
 
-def test_find_files_by_mime_type(tmp_path):
+def test_find_files_by_mime_type(tmp_path: Path):
     json_file = tmp_path / "data.json"
     txt_file = tmp_path / "notes.txt"
     json_file.write_text('{"ok": true}')
@@ -66,14 +68,18 @@ def test_find_files_by_mime_type(tmp_path):
     assert len(found) == 0
 
 
-ignored_file_names = [".ignore", ".also-ignore"]
-ignored_dir_names = ["ignore-dir", "ignore-dir-2"]
+ignored_file_names: List[str] = [".ignore", ".also-ignore"]
+ignored_dir_names: List[str] = ["ignore-dir", "ignore-dir-2"]
 
-test_dir_settings = [([], []), (ignored_file_names, []), ([], ignored_dir_names)]
+test_dir_settings: List[Tuple[List[str], List[str]]] = [
+    ([], []),
+    (ignored_file_names, []),
+    ([], ignored_dir_names),
+]
 
 
 # @pytest.mark.parametrize("ignore_files,ignore_dirs", test_dir_settings)
-def test_is_dir_empty(tmp_path):
+def test_is_dir_empty(tmp_path: Path):
     # test an empty dir with no files
     empty_dir = tmp_path / "empty"
     empty_dir.mkdir()

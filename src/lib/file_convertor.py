@@ -1,6 +1,6 @@
 import mimetypes
 import os
-from typing import Generator, List, Literal, Optional, TypedDict
+from typing import Dict, Generator, List, Literal, Optional, TypedDict
 
 from pydub import AudioSegment
 from pydub.utils import mediainfo
@@ -99,7 +99,12 @@ class FileConvertor(object):
         try:
             file_path = os.path.join(file["path"], file["old_name"])
             song = AudioSegment.from_file(file_path)
-            tags = mediainfo(file_path).get("TAG")
+
+            # check that tags are present and a dict
+            raw_tags = mediainfo(file_path).get("TAG", {})
+            tags: Optional[Dict[str, str]] = (
+                raw_tags if isinstance(raw_tags, dict) else None
+            )
             song.export(
                 os.path.join(file["path"], file["new_name"]),
                 format="mp4",

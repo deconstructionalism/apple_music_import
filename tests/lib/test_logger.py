@@ -1,6 +1,12 @@
+from io import StringIO
+from typing import Callable, Tuple, TypeAlias
+
 import pytest
 
-from src.lib.logger import COLORS, RESET
+from src.lib.logger import COLORS, RESET, IndentColoredLogger
+
+LoggerWithStream: TypeAlias = Tuple[IndentColoredLogger, StringIO]
+StripColor: TypeAlias = Callable[[str, str], str]
 
 
 @pytest.mark.parametrize(
@@ -14,9 +20,12 @@ from src.lib.logger import COLORS, RESET
         ("prompt", "Prompt message"),
     ],
 )
-def test_log_levels(logger_with_stream, level, message):
+def test_log_levels(
+    logger_with_stream: LoggerWithStream, level: str, message: str
+) -> None:
     logger, stream = logger_with_stream
     log_method = getattr(logger, level)
+    print(level, log_method)
     log_method(message)
 
     output = stream.getvalue()
@@ -25,7 +34,9 @@ def test_log_levels(logger_with_stream, level, message):
     assert output.strip().endswith(RESET)
 
 
-def test_indent_and_dedent(logger_with_stream, strip_color):
+def test_indent_and_dedent(
+    logger_with_stream: LoggerWithStream, strip_color: StripColor
+) -> None:
     logger, stream = logger_with_stream
 
     logger.indent()
@@ -51,7 +62,9 @@ def test_indent_and_dedent(logger_with_stream, strip_color):
     assert "Dedented fully" == output[4]
 
 
-def test_prompt_log_level(logger_with_stream, strip_color):
+def test_prompt_log_level(
+    logger_with_stream: LoggerWithStream, strip_color: StripColor
+):
     logger, stream = logger_with_stream
 
     logger.prompt("This is a prompt message")
@@ -60,7 +73,7 @@ def test_prompt_log_level(logger_with_stream, strip_color):
     assert "This is a prompt message" == output
 
 
-def test_log_section(logger_with_stream, strip_color):
+def test_log_section(logger_with_stream: LoggerWithStream, strip_color: StripColor):
     logger, stream = logger_with_stream
 
     # test a section is indented and dedented
@@ -78,7 +91,9 @@ def test_log_section(logger_with_stream, strip_color):
     assert "outside of section" == output[4]
 
 
-def test_custom_log_section_start_and_end_formats(logger_with_stream, strip_color):
+def test_custom_log_section_start_and_end_formats(
+    logger_with_stream: LoggerWithStream, strip_color: StripColor
+):
     logger, stream = logger_with_stream
 
     # test that a custom start format is applied

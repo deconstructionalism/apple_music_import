@@ -15,13 +15,17 @@ class BandCampAlbumFolder(AbstractAlbumFolder):
 
     def __init__(self, path: str):
         self._path = path
-        super().__init__(path, "bandcamp", "cover.jpg")
+        super().__init__(path, "cover.jpg")
+
+    @property
+    def folder_type(self) -> str:
+        return "bandcamp"
 
     def delete_folder(self):
         """
         Extend abstract class method to delete the parent directory if it is empty
-        since Soulseek album downloads have the following structure:
-           [Soulseek user folder] > [album folder] > [...files]
+        since bandcamp album downloads have the following structure:
+           [band folder] > [album folder] > [...files]
         """
 
         # delete parent directory if it is empty
