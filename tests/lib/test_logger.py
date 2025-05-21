@@ -25,7 +25,6 @@ def test_log_levels(
 ) -> None:
     logger, stream = logger_with_stream
     log_method = getattr(logger, level)
-    print(level, log_method)
     log_method(message)
 
     output = stream.getvalue()

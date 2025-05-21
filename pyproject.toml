@@ -74,7 +74,7 @@ exclude = '\.venv'
 pythonpath = ["src"]
 
 [tool.coverage.report]
-omit = ["config.py", "__init__.py"]
+omit = ["config.py", "__init__.py", "src/lib/constants.py"]
 
 [tool.pyright]
 include = ["src", "tests"]
