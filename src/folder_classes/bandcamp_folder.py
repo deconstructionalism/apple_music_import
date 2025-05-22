@@ -1,11 +1,6 @@
-import os
-
-from send2trash import send2trash
-
 from src.lib.abstract_album_folder import AbstractAlbumFolder
-
-from ..lib.helpers import is_dir_empty
-from ..lib.logger import logger
+from src.lib.helpers import delete_child_and_parent_dir_if_empty
+from src.lib.logger import logger
 
 
 class BandCampAlbumFolder(AbstractAlbumFolder):
@@ -28,16 +23,12 @@ class BandCampAlbumFolder(AbstractAlbumFolder):
            [band folder] > [album folder] > [...files]
         """
 
-        # delete parent directory if it is empty
-        parent_dir = os.path.dirname(self.path)
-        if is_dir_empty(parent_dir, ignore_dirs=[os.path.basename(self.path)]):
+        parent_deleted, parent_dir = delete_child_and_parent_dir_if_empty(self.path)
+
+        if parent_deleted:
             logger.indent()
             logger.info(
-                f"no other files in parent dir ({parent_dir}). parent dir will "
-                + "be deleted"
+                f"no other files in parent dir ({parent_dir}). parent dir was "
+                + "deleted"
             )
             logger.dedent()
-            send2trash(parent_dir)
-        # otherwise just delete just the album
-        else:
-            send2trash(self.path)

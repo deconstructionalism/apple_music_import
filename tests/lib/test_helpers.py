@@ -1,12 +1,14 @@
 import json
 import mimetypes
+import os
 from pathlib import Path
-from typing import List, Tuple
+from typing import List
 
 import pytest
 
 from src.lib.helpers import (
     ClassKeyJSONEncoder,
+    delete_child_and_parent_dir_if_empty,
     find_files_by_ext,
     find_files_by_mime_type,
     is_dir_empty,
@@ -71,15 +73,14 @@ def test_find_files_by_mime_type(tmp_path: Path):
 ignored_file_names: List[str] = [".ignore", ".also-ignore"]
 ignored_dir_names: List[str] = ["ignore-dir", "ignore-dir-2"]
 
-test_dir_settings: List[Tuple[List[str], List[str]]] = [
-    ([], []),
-    (ignored_file_names, []),
-    ([], ignored_dir_names),
-]
 
-
-# @pytest.mark.parametrize("ignore_files,ignore_dirs", test_dir_settings)
 def test_is_dir_empty(tmp_path: Path):
+    # test for `TypeError` if non-dir is passed as arg
+    random_file = (tmp_path / "random_file").write_text("hello")
+    with pytest.raises(TypeError) as e:
+        is_dir_empty(str(random_file))
+    assert str(e.value) == "`dir_path` must be a directory"
+
     # test an empty dir with no files
     empty_dir = tmp_path / "empty"
     empty_dir.mkdir()
@@ -192,6 +193,44 @@ def test_is_dir_empty(tmp_path: Path):
         )
         is True
     )
+
+
+def test_delete_child_and_parent_dir_if_empty(tmp_path: Path) -> None:
+    # test for `TypeError` if non-dir is passed as arg
+    random_file = (tmp_path / "random_file").write_text("hello")
+    with pytest.raises(TypeError) as e:
+        delete_child_and_parent_dir_if_empty(str(random_file))
+    assert str(e.value) == "`child_path` must be a directory"
+
+    # test if parent dir is not empty
+    non_empty_parent_dir = tmp_path / "non_empty_parent_dir"
+    non_empty_parent_dir.mkdir()
+    random_file = non_empty_parent_dir / "random_file"
+    random_file.write_text("hello")
+    child_dir_1 = non_empty_parent_dir / "child_dir_1"
+    child_dir_1.mkdir()
+    (child_dir_1 / "file.mp4").write_text("hello")
+
+    parent_empty, parent_dir = delete_child_and_parent_dir_if_empty(str(child_dir_1))
+
+    assert parent_empty is False
+    assert parent_dir == str(non_empty_parent_dir)
+    assert os.path.exists(str(parent_dir))
+    assert not os.path.exists(str(child_dir_1))
+
+    # test if parent dir is empty
+    empty_parent_dir = tmp_path / "empty_parent_dir"
+    empty_parent_dir.mkdir()
+    child_dir_2 = empty_parent_dir / "child_dir_2"
+    child_dir_2.mkdir()
+    (child_dir_2 / "file.mp4").write_text("hello")
+
+    parent_empty, parent_dir = delete_child_and_parent_dir_if_empty(str(child_dir_2))
+
+    assert parent_empty is True
+    assert parent_dir == str(empty_parent_dir)
+    assert not os.path.exists(str(parent_dir))
+    assert not os.path.exists(str(child_dir_2))
 
 
 def test_ClassKeyJSONEncoder():

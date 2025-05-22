@@ -3,7 +3,9 @@ import json
 import mimetypes
 import os
 from itertools import chain
-from typing import Any, Dict, Hashable, List, cast
+from typing import Any, Dict, Hashable, List, Tuple, cast
+
+from send2trash import send2trash
 
 
 def find_files_by_ext(path: str, extensions: List[str]) -> List[str]:
@@ -70,6 +72,9 @@ def is_dir_empty(
         bool: whether or not the directory is empty
     """
 
+    if not os.path.isdir(dir_path):
+        raise TypeError("`dir_path` must be a directory")
+
     for _, dirs, files in os.walk(dir_path, topdown=True):
         dirs[:] = [d for d in dirs if d not in ignore_dirs]
         files[:] = [f for f in files if f not in ignore_files]
@@ -77,6 +82,32 @@ def is_dir_empty(
             return False
 
     return True
+
+
+def delete_child_and_parent_dir_if_empty(child_path: str) -> Tuple[bool, str]:
+    """
+    Delete a child dir and if it's parent dir is empty besides the child dir,
+    then the parent dir is also deleted.
+
+
+    Args:
+        child_path (str): path to child dir
+
+    Returns:
+        Tuple[bool, str]: (whether the parent dir was also deleted, parent dir)
+    """
+
+    if not os.path.isdir(child_path):
+        raise TypeError("`child_path` must be a directory")
+
+    # delete parent directory if it is empty
+    parent_dir = os.path.dirname(child_path)
+    if is_dir_empty(parent_dir, ignore_dirs=[os.path.basename(child_path)]):
+        send2trash(parent_dir)
+        return True, parent_dir
+    else:
+        send2trash(child_path)
+        return False, parent_dir
 
 
 class ClassKeyJSONEncoder(json.JSONEncoder):
