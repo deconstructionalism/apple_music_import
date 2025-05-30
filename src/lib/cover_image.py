@@ -18,7 +18,7 @@ class CoverImage(object):
         self.mime_type = mimetypes.guess_type(path)[0]
 
     def display(self) -> None:
-        subprocess.run(f"viu {self.path}", shell=True)
+        subprocess.run(f'viu "{self.path}"', shell=True)
 
     @staticmethod
     def load_image_from_url(url: str):

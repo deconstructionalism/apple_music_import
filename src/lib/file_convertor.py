@@ -5,7 +5,7 @@ from typing import Dict, Generator, List, Literal, Optional, TypedDict
 from pydub import AudioSegment
 from pydub.utils import mediainfo
 
-from .constants import APPLE_MUSIC_COMPATIBLE_MIME_TYPES
+from src.lib.constants import APPLE_MUSIC_COMPATIBLE_MIME_TYPES
 
 
 class FileConversionStatus(TypedDict):
@@ -54,6 +54,8 @@ class FileConvertor(object):
         Find all audio files in folder that are not compatible with Apple
         Music.
         """
+        if not os.path.isdir(self.path):
+            raise TypeError("`path` must be a directory")
 
         # get a list of all files in folder
         file_names = [

@@ -2,12 +2,12 @@ import os
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from .apple_music import import_file_to_apple_music
-from .constants import APPLE_MUSIC_COMPATIBLE_MIME_TYPES, IMAGE_EXTENSIONS
-from .cover_image import CoverImage
-from .file_convertor import FileConvertor
-from .helpers import find_files_by_ext, find_files_by_mime_type
-from .logger import logger
+from src.lib.apple_music import import_file_to_apple_music
+from src.lib.constants import APPLE_MUSIC_COMPATIBLE_MIME_TYPES, IMAGE_EXTENSIONS
+from src.lib.cover_image import CoverImage
+from src.lib.file_convertor import FileConvertor
+from src.lib.helpers import find_files_by_ext, find_files_by_mime_type
+from src.lib.logger import logger
 
 
 class AbstractAlbumFolder(ABC):
@@ -79,6 +79,7 @@ class AbstractAlbumFolder(ABC):
         else:
             # display images with numbers
             images_in_folder = [CoverImage(path) for path in image_paths_in_folder]
+            print(images_in_folder[0].path)
             logger.info(f"{len(images_in_folder)} images found in folder.")
             logger.prompt(
                 "please pick one by entering the number you would like to use or enter "

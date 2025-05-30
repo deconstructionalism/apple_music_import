@@ -5,10 +5,10 @@ import subprocess
 from itertools import chain
 from typing import List
 
-from .config import DELETE_FOLDER_AFTER_IMPORT, FOLDER_TYPE_GLOB_MAPPINGS
-from .lib.abstract_album_folder import AbstractAlbumFolder
-from .lib.helpers import ClassKeyJSONEncoder
-from .lib.logger import logger
+from src.config import DELETE_FOLDER_AFTER_IMPORT, FOLDER_TYPE_GLOB_MAPPINGS
+from src.lib.abstract_album_folder import AbstractAlbumFolder
+from src.lib.helpers import ClassKeyJSONEncoder
+from src.lib.logger import logger
 
 
 def main():

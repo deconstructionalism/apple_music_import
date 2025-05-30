@@ -1,7 +1,6 @@
 from src.lib.abstract_album_folder import AbstractAlbumFolder
-
-from ..lib.helpers import delete_child_and_parent_dir_if_empty
-from ..lib.logger import logger
+from src.lib.helpers import delete_child_and_parent_dir_if_empty
+from src.lib.logger import logger
 
 
 class SoulseekAlbumFolder(AbstractAlbumFolder):

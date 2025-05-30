@@ -1,8 +1,8 @@
 from typing import Dict, List, Type
 
-from .folder_classes.bandcamp_folder import BandCampAlbumFolder
-from .folder_classes.soulseek_folder import SoulseekAlbumFolder
-from .lib.abstract_album_folder import AbstractAlbumFolder
+from src.folder_classes.bandcamp_folder import BandCampAlbumFolder
+from src.folder_classes.soulseek_folder import SoulseekAlbumFolder
+from src.lib.abstract_album_folder import AbstractAlbumFolder
 
 # Map album folder classes to lists of globs for where those folder
 # can be located
