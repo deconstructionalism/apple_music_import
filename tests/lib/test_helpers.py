@@ -58,12 +58,12 @@ def test_find_files_by_mime_type(tmp_path: Path):
 
     # one MIME type
     found = find_files_by_mime_type(str(tmp_path), ["application/json"])
-    assert "data.json" in found
-    assert "notes.txt" not in found
+    assert str(json_file) in found
+    assert str(txt_file) not in found
 
     # multiple MIME types
     found = find_files_by_mime_type(str(tmp_path), ["application/json", "text/plain"])
-    assert set(found) == {"data.json", "notes.txt"}
+    assert set(found) == {str(json_file), str(txt_file)}
 
     # no matching MIME type
     found = find_files_by_mime_type(str(tmp_path), ["image/jpeg"])

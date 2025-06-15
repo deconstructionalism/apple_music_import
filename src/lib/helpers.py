@@ -43,7 +43,9 @@ def find_files_by_mime_type(path: str, mime_types: List[str]) -> List[str]:
     """
 
     all_files = [
-        item for item in os.listdir(path) if os.path.isfile(os.path.join(path, item))
+        os.path.join(path, item)
+        for item in os.listdir(path)
+        if os.path.isfile(os.path.join(path, item))
     ]
     matched_files = [
         file for file in all_files if mimetypes.guess_type(file)[0] in mime_types

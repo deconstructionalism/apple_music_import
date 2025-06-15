@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from src.lib.apple_music import import_file_to_apple_music
 from src.lib.constants import APPLE_MUSIC_COMPATIBLE_MIME_TYPES, IMAGE_EXTENSIONS
-from src.lib.cover_image import CoverImage
+from src.lib.cover_image import CoverImage, CoverImagesInAlbumFiles
 from src.lib.file_convertor import FileConvertor
 from src.lib.helpers import find_files_by_ext, find_files_by_mime_type
 from src.lib.logger import logger
@@ -50,7 +50,13 @@ class AbstractAlbumFolder(ABC):
         ]
 
     def __choose_cover_image(self) -> None:
+        # get all cover images from image files as well as from music file tags
         image_paths_in_folder = find_files_by_ext(self.path, IMAGE_EXTENSIONS)
+        cover_images_in_album_folder = CoverImagesInAlbumFiles(self.path).process()
+        potential_cover_image_paths = [
+            *image_paths_in_folder,
+            *cover_images_in_album_folder,
+        ]
 
         # HELPER METHODS
 
@@ -71,15 +77,16 @@ class AbstractAlbumFolder(ABC):
                     logger.dedent()
 
         # if no images are found in folder, ask for a URL
-        if len(image_paths_in_folder) == 0:
+        if len(potential_cover_image_paths) == 0:
             logger.warning(f"no compatible images found in folder '{self.path}'.")
             load_image_from_url()
 
         # if there are images to pick from, display and ask user to pick one
         else:
             # display images with numbers
-            images_in_folder = [CoverImage(path) for path in image_paths_in_folder]
-            print(images_in_folder[0].path)
+            images_in_folder = [
+                CoverImage(path) for path in potential_cover_image_paths
+            ]
             logger.info(f"{len(images_in_folder)} images found in folder.")
             logger.prompt(
                 "please pick one by entering the number you would like to use or enter "

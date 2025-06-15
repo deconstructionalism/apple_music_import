@@ -36,7 +36,6 @@ def test_import_file_to_apple_music(tmp_path: Path) -> None:
 
         assert mock_run.called
         called_args = mock_run.call_args[0][0]
-        print(called_args)
         assert "osascript" == called_args[0]
         assert "-e" == called_args[1]
         assert f'set thePath to POSIX path of "{dummy_file}"' in called_args[2]
