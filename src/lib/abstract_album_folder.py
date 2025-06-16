@@ -136,7 +136,7 @@ class AbstractAlbumFolder(ABC):
                 self.has_errors = True
                 logger.error(f"conversion failed for {old_path}:")
                 logger.indent()
-                logger.error(f"error: {file['state']['errorMessage']}")
+                logger.error(f"error: {file['state']['error_message']}")
                 logger.dedent()
 
     def __tag_files_with_image(self) -> None:

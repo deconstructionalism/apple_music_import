@@ -10,7 +10,7 @@ from src.lib.constants import APPLE_MUSIC_COMPATIBLE_MIME_TYPES
 
 class FileConversionStatus(TypedDict):
     status: Literal["pre-conversion", "success", "error"]
-    errorMessage: Optional[str]
+    error_message: Optional[str]
 
 
 class FileConversion(TypedDict):
@@ -49,7 +49,7 @@ class FileConvertor(object):
         self.path = path
         self.incompatible_files: List[FileConversion] = []
 
-    def __find_incompatible_audio_files(self) -> None:
+    def _find_incompatible_audio_files(self) -> None:
         """
         Find all audio files in folder that are not compatible with Apple
         Music.
@@ -86,13 +86,13 @@ class FileConvertor(object):
                     "old_name": name,
                     "new_name": new_name,
                     "path": self.path,
-                    "state": {"status": "pre-conversion", "errorMessage": None},
+                    "state": {"status": "pre-conversion", "error_message": None},
                 }
                 incompatible_files.append(audio_file)
 
         self.incompatible_files = incompatible_files
 
-    def __convert_file(self, file: FileConversion) -> None:
+    def _convert_file(self, file: FileConversion) -> None:
         """Attempt to convert a single audio file to lossless .m4a.
 
         Args:
@@ -116,13 +116,12 @@ class FileConvertor(object):
             file["state"]["status"] = "success"
         except Exception as e:
             file["state"]["status"] = "error"
-            file["state"]["errorMessage"] = str(e)
+            file["state"]["error_message"] = str(e)
 
     def convert_all(self) -> Generator[FileConversion, None, None]:
         """Convert all Apple Music incompatible audio files in folder to .m4a."""
-
-        self.__find_incompatible_audio_files()
+        self._find_incompatible_audio_files()
 
         for file in self.incompatible_files:
-            self.__convert_file(file)
+            self._convert_file(file)
             yield file
